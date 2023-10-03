@@ -88,3 +88,57 @@ func (uc *UserController) Update(ctx *gin.Context) {
 		"data":   data,
 	})
 }
+
+func (uc *UserController) Login(ctx *gin.Context) {
+	var loginData struct {
+		Email    string `json:"Email"`
+		Password string `json:"Password"`
+	}
+
+	user, err := uc.userService.Login(loginData.Email, loginData.Password)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status": "Error",
+			"data":   err,
+		})
+
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"status":  "OK",
+		"message": "Login berhasil",
+		"user":    user,
+	})
+}
+
+func (uc *UserController) Register(ctx *gin.Context) {
+	var registrationData struct {
+		Name     string `json:"Name"`
+		Email    string `json:"Email"`
+		Password string `json:"Password"`
+	}
+
+	if err := ctx.ShouldBindJSON(&registrationData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"status":  "Error",
+			"message": "Permintaan tidak valid",
+		})
+		return
+	}
+
+	user, err := uc.userService.Register(registrationData.Name, registrationData.Email, registrationData.Password)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status": "Error",
+			"data":   err,
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"status":  "OK",
+		"message": "Registrasi berhasil",
+		"user":    user,
+	})
+}

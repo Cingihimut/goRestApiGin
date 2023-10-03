@@ -1,16 +1,17 @@
 package user
 
 import (
-	// "github.com/go-playground/validator/v10/translations/id"
 	"gorm.io/gorm"
 )
 
 type UserRepository interface {
 	FindAll() []User
 	FindOne(id int) User
+	FindByEmail(string) (*User, error)
 	Save(user User) (*User, error)
 	Update(user User) (*User, error)
 	Delete(user User) (*User, error)
+	POST(user User) (*User, error)
 }
 
 type UserRepositoryImpl struct {
@@ -18,7 +19,7 @@ type UserRepositoryImpl struct {
 }
 
 func NewUserRepository(db *gorm.DB) UserRepository {
-	return &UserRepositoryImpl{db: db}
+	return &UserRepositoryImpl{db}
 }
 
 func (ur *UserRepositoryImpl) FindAll() []User {
@@ -35,6 +36,16 @@ func (ur *UserRepositoryImpl) FindOne(id int) User {
 	_ = ur.db.First(&user, id)
 
 	return user
+}
+
+func (ur *UserRepositoryImpl) FindByEmail(email string) (*User, error) {
+	var user User
+
+	if err := ur.db.Where("email = ?", email).First(&user).Error; err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }
 
 func (ur *UserRepositoryImpl) Save(user User) (*User, error) {
@@ -68,4 +79,14 @@ func (ur *UserRepositoryImpl) Delete(user User) (*User, error) {
 
 	return &user, nil
 
+}
+
+func (ur *UserRepositoryImpl) POST(user User) (*User, error) {
+	result := ur.db.Save(&user)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &user, nil
 }

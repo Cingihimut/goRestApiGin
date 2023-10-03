@@ -22,5 +22,7 @@ func Api(router *gin.Engine, db *gorm.DB) {
 		v1.POST("/user", userController.Create)
 		v1.PATCH("/user/:id", userController.Update)
 		v1.DELETE("/user", userController.Delete)
+		v1.POST("/login", userController.Index)
+		v1.POST("/register", userController.Create)
 	}
 }

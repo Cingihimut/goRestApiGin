@@ -14,6 +14,8 @@ type UserService interface {
 	Create(ctx *gin.Context) (*User, error)
 	Update(ctx *gin.Context) (*User, error)
 	Delete(ctx *gin.Context) (*User, error)
+	Login(email, password string) (*User, error)
+	Register(string, string, string) (*User, error)
 }
 
 type UserServiceImpl struct {
@@ -103,6 +105,59 @@ func (us *UserServiceImpl) Delete(ctx *gin.Context) (*User, error) {
 	}
 
 	result, err := us.userRepository.Delete(user)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+
+}
+
+func (us *UserServiceImpl) Login(email, password string) (*User, error) {
+	var input dto.LoginInput
+	input.Email = email
+	input.Password = password
+
+	validate := validator.New()
+
+	err := validate.Struct(input)
+
+	if err != nil {
+		return nil, err
+	}
+
+	newUser := User{
+		Name:  input.Name,
+		Email: input.Email,
+	}
+
+	result, err := us.userRepository.POST(newUser)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (us *UserServiceImpl) Register(email, name, password string) (*User, error) {
+	var input dto.CreateUserInput
+
+	validate := validator.New()
+
+	err := validate.Struct(input)
+
+	if err != nil {
+		return nil, err
+	}
+
+	user := User{
+		Name:  input.Name,
+		Email: input.Email,
+	}
+
+	result, err := us.userRepository.Save(user)
 
 	if err != nil {
 		return nil, err
