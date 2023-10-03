@@ -5,7 +5,9 @@ This project demonstrates a basic go curd use case with gin and gorm. It comes w
 Try running some of the following tasks:
 
 ```shell
-go mod init /name of the link for exp github link
-run the code with command go run main.go
-
+clone the code with gitclone https://github.com/Cingihimut/goRestApiGin.git 
+go build main.go
+go run main.go
 ```
+
+You can integrated with mysql
