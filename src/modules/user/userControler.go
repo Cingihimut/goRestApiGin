@@ -89,19 +89,26 @@ func (uc *UserController) Update(ctx *gin.Context) {
 	})
 }
 
-func (uc *UserController) Login(ctx *gin.Context) {
+func (uc *UserController) Login(w http.ResponseWriter, r *http.Request) {
 	var loginData struct {
 		Email    string `json:"Email"`
 		Password string `json:"Password"`
 	}
 
+	if err := ctx.ShouldBindJSON(&loginData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"status":  "Error",
+			"message": "Permintaan tidak valid",
+		})
+		return
+	}
+
 	user, err := uc.userService.Login(loginData.Email, loginData.Password)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"status": "Error",
-			"data":   err,
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"status":  "Error",
+			"message": "Login gagal",
 		})
-
 		return
 	}
 
@@ -130,8 +137,8 @@ func (uc *UserController) Register(ctx *gin.Context) {
 	user, err := uc.userService.Register(registrationData.Name, registrationData.Email, registrationData.Password)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"status": "Error",
-			"data":   err,
+			"status":  "Error",
+			"message": "Registrasi gagal",
 		})
 		return
 	}

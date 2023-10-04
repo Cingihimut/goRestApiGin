@@ -11,7 +11,7 @@ type UserRepository interface {
 	Save(user User) (*User, error)
 	Update(user User) (*User, error)
 	Delete(user User) (*User, error)
-	POST(user User) (*User, error)
+	Login(user User) (*User, error)
 }
 
 type UserRepositoryImpl struct {
@@ -81,7 +81,7 @@ func (ur *UserRepositoryImpl) Delete(user User) (*User, error) {
 
 }
 
-func (ur *UserRepositoryImpl) POST(user User) (*User, error) {
+func (ur *UserRepositoryImpl) Login(user User) (*User, error) {
 	result := ur.db.Save(&user)
 
 	if result.Error != nil {

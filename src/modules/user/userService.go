@@ -127,12 +127,12 @@ func (us *UserServiceImpl) Login(email, password string) (*User, error) {
 		return nil, err
 	}
 
-	newUser := User{
+	user := User{
 		Name:  input.Name,
 		Email: input.Email,
 	}
 
-	result, err := us.userRepository.POST(newUser)
+	result, err := us.userRepository.Login(user)
 
 	if err != nil {
 		return nil, err
@@ -152,12 +152,12 @@ func (us *UserServiceImpl) Register(email, name, password string) (*User, error)
 		return nil, err
 	}
 
-	user := User{
+	newUser := User{
 		Name:  input.Name,
 		Email: input.Email,
 	}
 
-	result, err := us.userRepository.Save(user)
+	result, err := us.userRepository.Save(newUser)
 
 	if err != nil {
 		return nil, err
